@@ -29,11 +29,11 @@ As some tags are turned off by default, you should then add default values
 for them:
 
 ```vim
-let g:pdv_cfg_Package = "placeholder"
-let g:pdv_cfg_Version = "1.0.0"
-let g:pdv_cfg_Author = "Your Name <your.name@example.com>"
-let g:pdv_cfg_Copyright = "Copyright 2011 by Your Name <your.name@example.com>"
-let g:pdv_cfg_License = "Provided under the GPL (http://www.gnu.org/copyleft/gpl.html)"
+let g:pdv_cfg_Package = 'placeholder'
+let g:pdv_cfg_Version = '1.0.0'
+let g:pdv_cfg_Author = 'Your Name <your.name@example.com>'
+let g:pdv_cfg_Copyright = 'Copyright 2011 by Your Name <your.name@example.com>'
+let g:pdv_cfg_License = 'Provided under the GPL (http://www.gnu.org/copyleft/gpl.html)'
 ```
 
 Here's the full list of configuration options:
