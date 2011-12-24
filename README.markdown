@@ -31,8 +31,8 @@ for them:
 ```vim
 let g:pdv_cfg_Package = "placeholder"
 let g:pdv_cfg_Version = "1.0.0"
-let g:pdv_cfg_Author = "Michael Härtl <haertl.mike@gmail.com>"
-let g:pdv_cfg_Copyright = "Copyright 2011 by Michael Härtl <haertl.mike@gmail.com>"
+let g:pdv_cfg_Author = "Your Name <your.name@example.com>"
+let g:pdv_cfg_Copyright = "Copyright 2011 by Your Name <your.name@example.com>"
 let g:pdv_cfg_License = "Provided under the GPL (http://www.gnu.org/copyleft/gpl.html)"
 ```
 
@@ -57,7 +57,7 @@ Here's the full list of configuration options:
 * `g:pdv_cfg_paste`: Wether to `:set paste` before documenting. Defaults to 1 (on).
 * `g:pdv_cfg_php4always`: Wether PHP4 tags should be set, like `@access`. Defaults to 0 (off).
 * `g:pdv_cfg_php4guess`: Wether to guess scopes from names (`$_foo`/`_bar()`). Defaults to 1 (on).
-* `g:pdv_cfg_php4guessval`: Default scope for matches of `g:pdv_cfg_php4guess`. Defaults to "protected".
+* `g:pdv_cfg_php4guessval`: Default scope for matches of `g:pdv_cfg_php4guess`. Defaults to `"protected"`.
 
 ### Docblock formatting
 
