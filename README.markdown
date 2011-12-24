@@ -13,8 +13,56 @@ If you prefer Tobias' original repo, you find it at `tobyS/vip`.
 
 ## Installation
 
-TBD
+Just move the `pdv-standalone.vim` file to your `~/.vim/plugin` directory or use a
+package manager like Vundle (https://github.com/gmarik/vundle).
 
 ## Configuration
 
-TBD
+It's recommended to map some keys to PDV. Personally i prefer `<C-K>`:
+
+```vim
+nnoremap <C-K> :call PhpDocSingle()<CR>
+vnoremap <C-K> :call PhpDocRange()<CR>
+```
+
+As some tags are turned off by default, you should then add default values
+for them:
+
+```vim
+let g:pdv_cfg_Package = "placeholder"
+let g:pdv_cfg_Version = "1.0.0"
+let g:pdv_cfg_Author = "Michael Härtl <haertl.mike@gmail.com>"
+let g:pdv_cfg_Copyright = "Copyright 2011 by Michael Härtl <haertl.mike@gmail.com>"
+let g:pdv_cfg_License = "Provided under the GPL (http://www.gnu.org/copyleft/gpl.html)"
+```
+
+Here's the full list of configuration options:
+
+### Class level tags:
+
+* `g:pdv_cfg_Package`: Value of @package tag. Defaults to "" which means off.
+* `g:pdv_cfg_Version`: Value of @version tag. Defaults to "" which means off.
+* `g:pdv_cfg_Author`: Value of @author tag. Defaults to "" which means off.
+* `g:pdv_cfg_Copyright`: Value of @copyright tag. Defaults to "" which means off.
+* `g:pdv_cfg_License`: Value of @license tag. Defaults to "" which means off.
+
+### Function tags:
+
+* `g:pdv_cfg_ReturnVal`: Value of @return tag. Defaults to "void". Use "" to create no return tag.
+
+### Options:
+
+* `g:pdv_cfg_Type`: Default type of attributes and parameters. Defaults to "mixed".
+* `g:pdv_cfg_Uses`: Wether to create @uses tags. Defaults to 0 (off).
+* `g:pdv_cfg_paste`: Wether to :set paste before documenting. Defaults to 1 (on).
+* `g:pdv_cfg_php4always`: Wether PHP4 tags should be set, like @access. Defaults to 0 (off).
+* `g:pdv_cfg_php4guess`: Wether to guess scopes from names ($_foo/_bar()). Defaults to 1 (on).
+* `g:pdv_cfg_php4guessval`: Default scope for matches of g:pdv_cfg_php4guess. Defaults to "protected".
+
+### Docblock formatting
+
+* `g:pdv_cfg_CommentHead`: Start of any comment block. Defaults to "/**"
+* `g:pdv_cfg_Comment1`: Comment prefix of 1st line after start. Defaults to " * "
+* `g:pdv_cfg_Commentn`: Comment prefix of remaining lines. Defaults to " * "
+* `g:pdv_cfg_CommentTail`: End of any comment block. Defaults to " */"
+* `g:pdv_cfg_CommentSingle`: Single line comment prefix. Defaults to "//"

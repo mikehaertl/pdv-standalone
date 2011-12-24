@@ -9,41 +9,34 @@
 " mainly adds configuration options. The original version is
 " Copyright 2005 by Tobias Schlitt <toby@php.net>
 "
-" Inspired by phpDoc script for Vim by Vidyut Luther (http://www.phpcult.com/).
-"
 " Provided under the GPL (http://www.gnu.org/copyleft/gpl.html).
 "
-" This script provides functions to generate phpDocumentor conform
-" documentation blocks for your PHP code. The script currently
-" documents:
+" This plugin can generate comment blocks for use with phpDocumentor.
+" It currently documents:
 "
 " - Classes
 " - Methods/Functions
 " - Attributes
 "
-" All of those supporting all PHP 4 and 5 syntax elements.
-"
-" Beside that it allows you to define default values for phpDocumentor tags
-" like @version (I use $id$ here), @author, @license and so on.
-"
 " For function/method parameters and attributes, the script tries to guess the
 " type as good as possible from PHP5 type hints or default values (array, bool,
 " int, string...).
 "
-" You can use this script by mapping the function PhpDoc() to any
-" key combination. Hit this on the line where the element to document
-" resides and the doc block will be created directly above that line.
+" Configuration
+" =============
 "
-" Installation
-" ============
+" After moving the plugin to your local plugin folder (or installing it
+" through a plugin manager like Vundle) you need to configure some tags in
+" your .vimrc. You may want to configure the following tags, which are
+" disabled by default:
 "
-" For example include into your .vimrc:
+"   let g:pdv_cfg_Package = "placeholder"
+"   let g:pdv_cfg_Version = "1.0.0"
+"   let g:pdv_cfg_Author = "Michael Härtl <haertl.mike@gmail.com>"
+"   let g:pdv_cfg_Copyright = "Copyright 2011 by Michael Härtl"
+"   let g:pdv_cfg_License = "GPL (http://www.gnu.org/copyleft/gpl.html)"
 "
-" source ~/.vim/php-doc.vim
-" imap <C-o> :set paste<CR>:call PhpDoc()<CR>:set nopaste<CR>i
-"
-" This includes the script and maps the combination <ctrl>+o (only in
-" insert mode) to the doc function.
+" See the source code below for all avaliable configuration options.
 "
 " Changelog
 " =========
@@ -51,92 +44,96 @@
 " Version 1.0.0
 " -------------
 "
-"  * Created the initial version of this script while playing around with VIM
-"  scripting the first time and trying to fix Vidyut's solution, which
-"  resulted in a complete rewrite.
+"   * Created initial fork of Tobias Schlitts plugin. Made all tags optional
+"   and configurable from .vimrc
 "
-" Version 1.1.0
-" -------------
-"  * Fixed bug with call-by-reference parameters.
-"
-
 if has ("user_commands")
 
 " {{{ Globals
 
-" After phpDoc standard
-if !exists('g:pdv_cfg_CommentHead')
-  let g:pdv_cfg_CommentHead = "/**"
-endif
-if !exists('g:pdv_cfg_Comment1')
-  let g:pdv_cfg_Comment1 = " * "
-endif
-if !exists('g:pdv_cfg_Commentn')
-  let g:pdv_cfg_Commentn = " *"
-endif
-if !exists('g:pdv_cfg_CommentTail')
-  let g:pdv_cfg_CommentTail = " */"
-endif
-if !exists('g:pdv_cfg_CommentSingle')
-  let g:pdv_cfg_CommentSingle = "//"
-endif
-
-" Default values
-if !exists('g:pdv_cfg_Type')
-  let g:pdv_cfg_Type = "mixed"
-endif
+" Class level tags:
+"
+" Value of @package tag. Defaults to "" which means off.
 if !exists('g:pdv_cfg_Package')
   let g:pdv_cfg_Package = ""
 endif
+" Value of @version tag. Defaults to "" which means off.
 if !exists('g:pdv_cfg_Version')
   let g:pdv_cfg_Version = ""
 endif
+" Value of @author tag. Defaults to "" which means off.
 if !exists('g:pdv_cfg_Author')
   let g:pdv_cfg_Author = ""
 endif
+" Value of @copyright tag. Defaults to "" which means off.
 if !exists('g:pdv_cfg_Copyright')
   let g:pdv_cfg_Copyright = ""
 endif
+" Value of @license tag. Defaults to "" which means off.
 if !exists('g:pdv_cfg_License')
   let g:pdv_cfg_License = ""
 endif
 
+" Function tags:
+"
+" Value of @return tag. Defaults to "void". Use "" to create no return tag.
 if !exists('g:pdv_cfg_ReturnVal')
   let g:pdv_cfg_ReturnVal = "void"
 endif
 
-" Wether to create @uses tags for implementation of interfaces and inheritance
+" Options:
+"
+" Default type of attributes and parameters. Defaults to "mixed".
+if !exists('g:pdv_cfg_Type')
+  let g:pdv_cfg_Type = "mixed"
+endif
+" Wether to create @uses tags. Defaults to 0 (off).
 if !exists('g:pdv_cfg_Uses')
   let g:pdv_cfg_Uses = 0
 endif
-
-" Options
-" :set paste before documenting (1|0)? Recommended.
+" Wether to :set paste before documenting. Defaults to 1 (on).
 if !exists('g:pdv_cfg_paste')
   let g:pdv_cfg_paste = 1
 endif
-
-" Wether for PHP5 code PHP4 tags should be set, like @access,... (1|0)?
+" Wether PHP4 tags should be set, like @access. Defaults to 0 (off).
 if !exists('g:pdv_cfg_php4always')
   let g:pdv_cfg_php4always = 0
 endif
-
-" Wether to guess scopes after PEAR coding standards:
-" $_foo/_bar() == <private|protected> (1|0)?
+" Wether to guess scopes from names ($_foo/_bar()). Defaults to 1 (on).
 if !exists('g:pdv_cfg_php4guess')
   let g:pdv_cfg_php4guess = 1
 endif
-
-" If you selected 1 for the last value, this scope identifier will be used for
-" the identifiers having an _ in the first place.
+" Default scope for matches of g:pdv_cfg_php4guess. Defaults to "protected".
 if !exists('g:pdv_cfg_php4guessval')
   let g:pdv_cfg_php4guessval = "protected"
+endif
+
+" Docblock formatting
+"
+" Start of any comment block. Defaults to "/**"
+if !exists('g:pdv_cfg_CommentHead')
+  let g:pdv_cfg_CommentHead = "/**"
+endif
+" Comment prefix of 1st line after start. Defaults to " * "
+if !exists('g:pdv_cfg_Comment1')
+  let g:pdv_cfg_Comment1 = " * "
+endif
+" Comment prefix of remaining lines. Defaults to " * "
+if !exists('g:pdv_cfg_Commentn')
+  let g:pdv_cfg_Commentn = " *"
+endif
+" End of any comment block. Defaults to " */"
+if !exists('g:pdv_cfg_CommentTail')
+  let g:pdv_cfg_CommentTail = " */"
+endif
+" Single line comment prefix. Defaults to "//"
+if !exists('g:pdv_cfg_CommentSingle')
+  let g:pdv_cfg_CommentSingle = "//"
 endif
 
 "
 " Regular expressions
 "
-
 let g:pdv_re_comment = ' *\*/ *'
 
 " (private|protected|public)
@@ -184,6 +181,7 @@ func! PhpDocSingle()
 endfunc
 
 " }}}
+
  " {{{ PhpDocRange()
  " Documents a whole range of code lines ( does not add defualt doc block to
  " unknown types of lines ). Skips elements where a docblock is already
@@ -209,37 +207,6 @@ func! PhpDocRange() range
 endfunc
 
  " }}}
-" {{{ PhpDocFold()
-
-" func! PhpDocFold(name)
-"   let l:startline = line(".")
-"   let l:currentLine = l:startLine
-"   let l:commentHead = escape(g:pdv_cfg_CommentHead, "*.");
-"     let l:txtBOL = g:pdv_cfg_BOL . matchstr(l:name, '^\s*')
-"   " Search above for comment start
-"   while (l:currentLine > 1)
-"       if (matchstr(l:commentHead, getline(l:currentLine)))
-"           break;
-"       endif
-"       let l:currentLine = l:currentLine + 1
-"   endwhile
-"   " Goto 1 line above and open a newline
-"     exe "norm! " . (l:currentLine - 1) . "Go\<ESC>"
-"   " Write the fold comment
-"     exe l:txtBOL . g:pdv_cfg_CommentSingle . " {"."{{ " . a:name . g:pdv_cfg_EOL
-"   " Add another newline below that
-"   exe "norm! o\<ESC>"
-"   " Search for our comment line
-"   let l:currentLine = line(".")
-"   while (l:currentLine <= line("$"))
-"       " HERE!!!!
-"   endwhile
-"
-"
-" endfunc
-
-
-" }}}
 
 " {{{ PhpDoc()
 
@@ -343,7 +310,9 @@ func! PhpDocFunc()
     if l:scope != ""
         call add(l:comment_lines, l:indent . g:pdv_cfg_Commentn . " @access " . l:scope)
     endif
-    call add(l:comment_lines, l:indent . g:pdv_cfg_Commentn . " @return " . g:pdv_cfg_ReturnVal)
+    if g:pdv_cfg_License != ""
+        call add(l:comment_lines, l:indent . g:pdv_cfg_Commentn . " @return " . g:pdv_cfg_ReturnVal)
+    endif
 
     " Close the comment block.
     call add(l:comment_lines, l:indent . g:pdv_cfg_CommentTail)
@@ -441,11 +410,21 @@ func! PhpDocClass()
     if l:final != ""
         call add(l:comment_lines, l:indent . g:pdv_cfg_Commentn . " @final")
     endif
-    call add(l:comment_lines, l:indent . g:pdv_cfg_Commentn . " @package " . g:pdv_cfg_Package)
-    call add(l:comment_lines, l:indent . g:pdv_cfg_Commentn . " @version " . g:pdv_cfg_Version)
-    call add(l:comment_lines, l:indent . g:pdv_cfg_Commentn . " @copyright " . g:pdv_cfg_Copyright)
-    call add(l:comment_lines, l:indent . g:pdv_cfg_Commentn . " @author " . g:pdv_cfg_Author)
-    call add(l:comment_lines, l:indent . g:pdv_cfg_Commentn . " @license " . g:pdv_cfg_License)
+    if g:pdv_cfg_Package != ""
+        call add(l:comment_lines, l:indent . g:pdv_cfg_Commentn . " @package " . g:pdv_cfg_Package)
+    endif
+    if g:pdv_cfg_Version != ""
+        call add(l:comment_lines, l:indent . g:pdv_cfg_Commentn . " @version " . g:pdv_cfg_Version)
+    endif
+    if g:pdv_cfg_Copyright != ""
+        call add(l:comment_lines, l:indent . g:pdv_cfg_Commentn . " @copyright " . g:pdv_cfg_Copyright)
+    endif
+    if g:pdv_cfg_Author != ""
+        call add(l:comment_lines, l:indent . g:pdv_cfg_Commentn . " @author " . g:pdv_cfg_Author)
+    endif
+    if g:pdv_cfg_License != ""
+        call add(l:comment_lines, l:indent . g:pdv_cfg_Commentn . " @license " . g:pdv_cfg_License)
+    endif
 
     " Close the comment block.
     call add(l:comment_lines, l:indent . g:pdv_cfg_CommentTail)
