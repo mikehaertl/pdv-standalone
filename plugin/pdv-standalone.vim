@@ -1,7 +1,7 @@
 " PDV (phpDocumentor for Vim) Standalone
 " ======================================
 "
-" Version: 1.0.0
+" Version: 1.0.1
 "
 " Copyright 2011 by Michael Härtl <haertl.mike@gmail.com>
 "
@@ -40,6 +40,11 @@
 "
 " Changelog
 " =========
+"
+" Version 1.0.1
+" -------------
+"
+"   * Fixed bug: @return is inserted now again
 "
 " Version 1.0.0
 " -------------
@@ -310,7 +315,7 @@ func! PhpDocFunc()
     if l:scope != ""
         call add(l:comment_lines, l:indent . g:pdv_cfg_Commentn . " @access " . l:scope)
     endif
-    if g:pdv_cfg_License != ""
+    if g:pdv_cfg_ReturnVal != ""
         call add(l:comment_lines, l:indent . g:pdv_cfg_Commentn . " @return " . g:pdv_cfg_ReturnVal)
     endif
 
